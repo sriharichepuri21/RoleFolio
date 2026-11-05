@@ -43,7 +43,7 @@ Updated 2026-11-04.
 - Corrected rate-denominator and time-unit comparisons, zero-baseline percentages, and change-direction validation.
 - Revision policy can repair provisional metric assumptions; the final ledger is authoritative. The final correction pass preserves unaffected content and introduces no new metrics or claims.
 - Engineering findings now distinguish blocking defects from observations. Deterministic checks remain blocking; observations remain visible as optional refinements.
-- 80 Python regression tests passed.
+- 83 Python regression tests passed, including Aggressive deterministic audits, strongest-project-bullet retention, and leadership-bullet preservation.
 - Live generation produced a fictional draft with alignment 46 → 89. Its follow-up review under the corrected finding schema completed in 11 seconds with no blocking findings. This review reused its recorded requirement texts and priority blueprint rather than regenerating the document.
 - Successful approval was verified through the restarted `/api/pdf` endpoint (HTTP 200); one-page text extraction/rasterization checks passed and the exported page was visually inspected.
 - This supersedes the prior unresolved status for the fictional fixture. It does not guarantee every future generation passes or prove any hypothetical achievement occurred.

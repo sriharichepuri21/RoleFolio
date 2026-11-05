@@ -494,7 +494,7 @@ def audit(settings, rows, jd, reqs, result, level, title, lock):
     generative = level == 'aggressive'
     visible = [r for r in result['rows'] if r['include']]
     issues = list(result['notes']) + [r['flag'] for r in visible if r.get('flag') and not (generative and r['id'].startswith('addition'))]
-    if level != 'basic' and not generative:
+    if level != 'basic':
         issues += bullet_issues(visible)
         summary = ' '.join(r['after'] for r in visible if r['kind'] == 'text' and SUMMARY.search(r['section']))
         words = len(summary.split())

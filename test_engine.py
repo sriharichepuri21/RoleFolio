@@ -280,7 +280,7 @@ class FitPage(unittest.TestCase):
         pdfdoc.render(fitpage.lines(fitted))  # exports as exactly one page
         kept = {r["after"] for r in fitted if r["include"]}
         self.assertTrue(any("Terraform" in k for k in kept))  # core evidence protected
-        for p in ["Kairo", "Ledger", "Atlas"]:  # every project keeps its first bullet
+        for p in ["Kairo", "Ledger", "Atlas"]:  # equal relevance retains the first bullet
             self.assertIn(f"Developed {p} feature 0 " + "and coordinated release planning with product, design, data and support partners across several regions.", kept)
         self.assertTrue(any(l.startswith("Removed repeated skills") for l in info["log"]))
         per_role = [sum(1 for r in fitted if r["include"] and r["kind"] == "bullet" and c in r["group"]) for c in ("LiveRamp", "UNT", "Zebra")]
@@ -290,6 +290,23 @@ class FitPage(unittest.TestCase):
         self.assertTrue(any("secondary project" in r["reason"] for r in fitted if not r["include"]))
         roles = {r["group"] for r in fitted if r["kind"] == "bullet" and r["include"] and r["section"] == "Experience"}
         self.assertEqual(len(roles), 3)  # no role loses all its bullets
+
+    def test_project_fit_preserves_most_relevant_bullet(self):
+        import fitpage
+        rows = long_resume()
+        strongest = next(r for r in rows if r["text"].startswith("Developed Kairo feature 2"))
+        strongest["text"] = strongest["text"].replace("and coordinated", "using Python and coordinated")
+        fitted, _ = fitpage.fit(engine.build(rows, out(), "medium", self.reqs)["rows"], self.reqs)
+        kept = [r["after"] for r in fitted if r["include"] and r["group"] == "Kairo"]
+        self.assertTrue(any(text.startswith("Developed Kairo feature 2") and "Python" in text for text in kept))
+        self.assertFalse(any(text.startswith("Developed Kairo feature 0") for text in kept))
+
+    def test_aggressive_fit_keeps_one_leadership_bullet(self):
+        import fitpage
+        fitted, _ = fitpage.fit(engine.build(long_resume(), out(), "aggressive", self.reqs)["rows"], self.reqs, generative=True)
+        leadership = [r for r in fitted if r["include"] and r["kind"] == "bullet" and r["section"] == "Leadership"]
+        self.assertEqual(len(leadership), 1)
+        self.assertTrue(leadership[0]["after"].startswith("Led a 40-person hackathon"))
 
     def test_spare_room_restores_experience(self):
         import fitpage

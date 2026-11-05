@@ -62,6 +62,15 @@ class QualityPipeline(unittest.TestCase):
         self.assertTrue(result['quality']['revised'])
         self.assertEqual(result['quality']['status'], 'passed')
 
+    def test_aggressive_summary_also_runs_deterministic_checks(self):
+        bad = dict(self.aggressive_draft(), summary='Backend Engineer building systems.')
+        result, model = self.run_pipeline([
+            self.plan, bad, {'issues': []}, self.recruiter_review,
+            self.aggressive_draft(), {'issues': []}, self.recruiter_review], 'aggressive')
+        self.assertEqual(model.call_count, 7)
+        self.assertTrue(result['quality']['revised'])
+        self.assertEqual(result['quality']['status'], 'passed')
+
     def test_basic_does_not_require_four_sentence_summary(self):
         result, model = self.run_pipeline([out(title='Backend Engineer'), {'issues': []}], 'basic')
         self.assertEqual(model.call_count, 2)

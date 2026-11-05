@@ -143,16 +143,18 @@ def fit(rows, reqs, generative=False):
                 groups.setdefault((r["section"], r["group"]), []).append(r)
         return groups
 
-    # 3. Secondary project bullets: every project keeps its first bullet.
+    # 3. Preserve the most relevant bullet of each project, not its input order.
     def projects_step():
-        extra = [r for g in bullets_by_group({"projects"}).values() for r in g[1:] if r["id"] not in protected]
+        extra = []
+        for group in bullets_by_group({"projects"}).values():
+            strongest = max(group, key=relevance)
+            extra.extend(r for r in group if r is not strongest and r["id"] not in protected)
         for r in sorted(extra, key=relevance):
             cut(r, "Removed a secondary project bullet to fit one page.")
             yield
     steps.append(projects_step)
 
-    # Verified drafts retain up to two other-section bullets until experience has been trimmed.
-    # Synthetic drafts remove these lower-value bullets before generated professional experience.
+    # Retain up to two other-section bullets in verified drafts and one in synthetic drafts before experience trimming.
     def other_step(keep):
         def step():
             extra = [r for g in bullets_by_group({"other"}).values() for r in g[keep:] if r["id"] not in protected]
@@ -160,7 +162,7 @@ def fit(rows, reqs, generative=False):
                 cut(r, "Removed a secondary bullet to fit one page.")
                 yield
         return step
-    steps.append(other_step(0 if generative else 2))
+    steps.append(other_step(1 if generative else 2))
 
     # Experience last. Allocation: ~5 bullets for the latest role, ~3 for earlier ones. Trim the role furthest over
     #    its allocation first, least relevant bullet first; never protected requirement coverage; floor of 3 (latest) / 2 (earlier).
