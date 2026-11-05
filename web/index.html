@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RoleFolio</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='9' fill='%23c94b30'/><path d='M9 23 15 9h4l-6 14zm6 0 6-14h3l-6 14z' fill='white'/></svg>" />
+    <script>document.documentElement.dataset.theme = new URLSearchParams(location.search).get('theme') || localStorage.rfTheme || 'light'</script>
+    <meta name="theme-color" content="#eef0f3" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
